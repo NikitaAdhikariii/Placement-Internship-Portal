@@ -1,0 +1,22 @@
+const express = require("express");
+const router = express.Router();
+const { register, login } = require("../controllers/authController");
+const auth = require("../middleware/authMiddleware");
+const role = require("../middleware/roleMiddleware");
+
+router.post("/register", register);
+router.post("/login", login);
+
+router.get("/student", auth, role(["student"]), (req, res) => {
+  res.json({ msg: "Student Dashboard Access" });
+});
+
+router.get("/company", auth, role(["company"]), (req, res) => {
+  res.json({ msg: "Company Dashboard Access" });
+});
+
+router.get("/admin", auth, role(["admin"]), (req, res) => {
+  res.json({ msg: "Admin Dashboard Access" });
+});
+
+module.exports = router;
