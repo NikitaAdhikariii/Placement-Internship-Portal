@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Company Login</title>
+
+<style>
+
+body{
+
+height:100vh;
+
+display:flex;
+
+justify-content:center;
+align-items:center;
+
+background:#111;
+
+font-family: Arial;
+
+}
+
+/* glow circle */
+
+.circle{
+
+position:absolute;
+
+width:340px;
+height:340px;
+
+background: radial-gradient(circle,#469ec7,#0a8f87);
+
+border-radius:50%;
+
+filter: blur(8px);
+
+}
+
+/* glass box */
+
+.box{
+
+position:relative;
+
+width:380px;
+
+padding:30px;
+
+border:1px solid rgba(255,255,255,0.5);
+
+background: rgba(255,255,255,0.05);
+
+backdrop-filter: blur(8px);
+
+text-align:center;
+
+color:white;
+
+}
+
+/* title */
+
+h2{
+
+margin-bottom:15px;
+
+letter-spacing:2px;
+
+}
+
+/* input */
+
+input{
+
+width:100%;
+padding:10px;
+margin:8px 0;
+border:1px solid rgba(255,255,255,0.6);
+background:transparent;
+color:white;
+
+}
+
+/* button */
+
+button{
+
+width:100%;
+padding:10px;
+margin-top:12px;
+border:1px solid white;
+background:transparent;
+color:white;
+cursor:pointer;
+letter-spacing:1px;
+
+}
+
+button:hover{
+
+background:#cad164;
+color:black;
+
+}
+
+/* login link */
+
+.login-link{
+
+margin-top:10px;
+font-size:13px;
+
+}
+
+.login-link a{
+
+color:#4070c7;
+text-decoration:none;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="circle"></div>
+
+<div class="box">
+
+<h2>COMPANY LOGIN</h2>
+
+<input type="email" id="email" placeholder="Company Email">
+
+<input type="password" id="password" placeholder="Password">
+
+<button onclick="loginCompany()">Login</button>
+
+<div class="login-link">
+
+Don't have account?
+
+<a href="company-register.html">Register</a>
+
+</div>
+
+</div>
+
+<script>
+async function loginCompany(){
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+
+    if(!email || !password){
+        alert("Please enter email and password");
+        return;
+    }
+
+    try{
+        const res = await fetch("http://localhost:5001/api/auth/login", {
+            method: "POST",
+            headers: { "Content-Type":"application/json" },
+            body: JSON.stringify({ 
+                email, 
+                password, 
+                role: "company" // important for backend
+            })
+        });
+
+        const data = await res.json();
+
+        if(res.ok){
+            if(data.user && data.user.role === "company"){
+                // login successful, redirect
+                window.location.href = "dashboard-company.html";
+            } else {
+                alert("Access denied for this role");
+            }
+        } else {
+            alert(data.message || "Invalid email or password");
+        }
+    } catch(err){
+        console.error(err);
+        alert("Server not running or network error");
+    }
+}
+</script>
+
+</body>
+
+</html>

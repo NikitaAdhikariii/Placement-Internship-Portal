@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Placement & Internship Portal</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body{margin:0;height:100vh;font-family:"Segoe UI",sans-serif;background-image:url("https://images.unsplash.com/photo-1521737604893-d14cc237f11d");background-size:cover;background-position:center;display:flex;justify-content:center;align-items:center;}
+.overlay{position:absolute;width:100%;height:100%;background:rgba(0,0,0,0.55);}
+.login-box{position:relative;z-index:1;width:400px;padding:35px;background:rgba(255,255,255,0.15);backdrop-filter:blur(12px);border-radius:16px;color:white;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,0.3);}
+input,select{width:100%;padding:12px;margin-top:12px;border-radius:8px;border:none;outline:none;}
+button{width:100%;margin-top:15px;padding:12px;border-radius:8px;border:none;background:linear-gradient(135deg,#00c6ff,#0072ff);color:white;font-weight:bold;font-size:15px;cursor:pointer;}
+button:hover{opacity:0.9;}
+#msg{margin-top:15px;font-size:14px;color:white;}
+.toggle{margin-top:12px;cursor:pointer;text-decoration:underline;color:#00c6ff;}
+</style>
+</head>
+<body>
+<div class="overlay"></div>
+<div class="login-box">
+  <h2 id="formTitle">Login</h2>
+  <p id="formDesc">Access your account</p>
+
+  <input type="text" id="name" placeholder="Full Name">
+  <input type="email" id="email" placeholder="Email" required>
+
+<input type="password" id="password" placeholder="Password" required>
+
+<select id="role" required>
+  <option value="">Select Role</option>
+  <option value="student">Student</option>
+  <option value="company">Company</option>
+  <option value="admin">Admin</option>
+</select>
+
+<button onclick="loginUser()">Login</button>
+  <p id="msg"></p>
+  <p class="toggle" id="toggleForm">First time? Register</p>
+</div>
+<script>
+
+async function loginUser(){
+
+const email=document.getElementById("email").value;
+const password=document.getElementById("password").value;
+const role=document.getElementById("role").value;
+
+const res=await fetch("http://localhost:5001/api/auth/login",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+email,
+password,
+role
+})
+
+});
+
+const data=await res.json();
+
+alert(data.message);
+
+if(data.user.role==="admin"){
+
+window.location.href="dashboard-admin.html";
+
+}
+
+else if(data.user.role==="student"){
+
+window.location.href="dashboard-student.html";
+
+}
+
+else if(data.user.role==="company"){
+
+window.location.href="dashboard-company.html";
+
+}
+
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Login / Register</title>
+<style>
+body{margin:0;height:100vh;display:flex;justify-content:center;align-items:center;font-family:Arial,sans-serif;background:linear-gradient(135deg,#0f4c4c,#2f7a7a);}
+.container{text-align:center;}
+h1{color:white;letter-spacing:3px;font-weight:300;margin-bottom:20px;}
+.box{background:rgba(0,0,0,0.55);padding:30px;width:350px;box-shadow:0 0 15px rgba(0,0,0,0.4);margin-bottom:10px;}
+.input-box{display:flex;align-items:center;margin-bottom:15px;background:#ddd;}
+.input-box span{padding:10px;background:#ccc;}
+input{border:none;outline:none;padding:10px;flex:1;background:#ddd;}
+button{width:100%;padding:12px;background:#5f9ea0;border:none;color:white;letter-spacing:2px;cursor:pointer;margin-top:10px;}
+.switch-btn{background:rgba(0,0,0,0.6);margin-top:10px;}
+</style>
+</head>
+<body>
+
+<div class="container">
+<h1>ADMIN LOGIN / REGISTER</h1>
+
+<div class="box">
+    <div class="input-box" id="name-box" style="display:none;">
+        <span>👤</span>
+        <input type="text" id="name" placeholder="Full Name">
+    </div>
+
+    <div class="input-box">
+        <span>📧</span>
+        <input type="email" id="email" placeholder="Email">
+    </div>
+
+    <div class="input-box">
+        <span>🔒</span>
+        <input type="password" id="password" placeholder="Password">
+    </div>
+
+    <button id="submit-btn">LOGIN</button>
+    <button id="switch-btn" class="switch-btn">First time? Register</button>
+</div>
+</div>
+
+<script>
+let isRegister = false;
+
+const submitBtn = document.getElementById("submit-btn");
+const switchBtn = document.getElementById("switch-btn");
+const nameBox = document.getElementById("name-box");
+
+switchBtn.addEventListener("click", () => {
+    isRegister = !isRegister;
+    if(isRegister){
+        submitBtn.textContent = "REGISTER";
+        switchBtn.textContent = "Already have an account? Login";
+        nameBox.style.display = "flex";
+    } else {
+        submitBtn.textContent = "LOGIN";
+        switchBtn.textContent = "First time? Register";
+        nameBox.style.display = "none";
+    }
+});
+
+submitBtn.addEventListener("click", async () => {
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const role = "admin";
+
+    if(!email || !password || (isRegister && !name)){
+        alert("Please fill all fields");
+        return;
+    }
+
+    const url = isRegister ? "http://localhost:5001/api/auth/register" : "http://localhost:5001/api/auth/login";
+    const bodyData = isRegister ? { name, email, password, role } : { email, password, role };
+
+    try{
+        const res = await fetch(url,{
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body: JSON.stringify(bodyData)
+        });
+        const data = await res.json();
+        if(res.ok){
+            if(isRegister){
+                alert("Registered successfully! Please login.");
+                isRegister=false;
+                submitBtn.textContent="LOGIN";
+                switchBtn.textContent="First time? Register";
+                nameBox.style.display="none";
+            } else {
+                window.location.href="dashboard-admin.html";
+            }
+        } else {
+            alert(data.message || "Error");
+        }
+    } catch(err){
+        console.error(err);
+        alert("Server not running");
+    }
+});
+</script>
+</body>
+</html>
