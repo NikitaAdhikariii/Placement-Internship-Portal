@@ -1,118 +1,105 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-
 <title>Company Dashboard</title>
 
 <style>
-
 body{
-
-font-family:Arial;
-
-background:#fff7f0;
-
 margin:0;
-
+font-family:Segoe UI;
+background:linear-gradient(135deg,#ff7e5f,#feb47b);
 }
-
-
 
 .header{
-
-background:#ff6b00;
-
 color:white;
-
-padding:15px;
-
 text-align:center;
-
-font-size:22px;
-
+padding:20px;
+font-size:26px;
+font-weight:bold;
 }
-
-
 
 .container{
-
-padding:20px;
-
+max-width:500px;
+margin:40px auto;
+background:rgba(255,255,255,0.2);
+backdrop-filter:blur(15px);
+padding:25px;
+border-radius:15px;
+box-shadow:0 8px 30px rgba(0,0,0,0.2);
+color:white;
 }
-
-
 
 input{
-
 width:100%;
-
-padding:10px;
-
-margin:8px 0;
-
+padding:12px;
+margin:10px 0;
+border:none;
+border-radius:8px;
+outline:none;
 }
-
-
 
 button{
-
-padding:10px;
-
-background:#ff6b00;
-
-color:white;
-
+width:100%;
+padding:12px;
+background:#fff;
+color:#ff6b00;
+font-weight:bold;
 border:none;
-
+border-radius:8px;
 cursor:pointer;
-
+transition:0.3s;
 }
 
-
+button:hover{
+background:#ff6b00;
+color:white;
+}
 
 </style>
 
 </head>
 
-
 <body>
 
-
-<div class="header">
-
-Company Dashboard
-
-</div>
-
-
+<div class="header">Company Dashboard 🚀</div>
 
 <div class="container">
 
-
 <h3>Post Job</h3>
 
+<input id="title" placeholder="Job Title">
+<input id="company" placeholder="Company Name">
+<input id="location" placeholder="Location">
+<input id="salary" placeholder="Salary">
+<input id="cgpa" placeholder="Minimum CGPA">
+<input id="skills" placeholder="Skills (Java,Python)">
 
-
-<input placeholder="Job Title">
-
-
-
-<input placeholder="Location">
-
-
-
-<input placeholder="Salary">
-
-
-
-<button>Post Job</button>
-
-
+<button onclick="postJob()">Post Job</button>
 
 </div>
 
+<script>
+async function postJob(){
+
+const data={
+title:title.value,
+company:company.value,
+location:location.value,
+salary:salary.value,
+minCGPA:Number(cgpa.value),
+skills:skills.value.split(",")
+};
+
+await fetch("http://localhost:5001/api/company/post-job",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify(data)
+});
+
+alert("Job Posted Successfully 🎉");
+
+}
+</script>
 
 </body>
-
 </html>

@@ -1,150 +1,302 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-
 <title>Student Dashboard</title>
 
 <style>
-
-body{
-
-font-family:Arial;
-
-background:#f2f6ff;
-
-margin:0;
-
+body {
+  margin: 0;
+  font-family: Segoe UI;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  transition: 0.3s;
 }
 
-
-
-.header{
-
-background:#0072ff;
-
-color:white;
-
-padding:15px;
-
-text-align:center;
-
-font-size:22px;
-
+.dark {
+  background: #121212;
+  color: white;
 }
 
-
-
-.container{
-
-padding:20px;
-
+/* HEADER */
+.header {
+  color: white;
+  text-align: center;
+  padding: 20px;
+  font-size: 28px;
+  font-weight: bold;
+  position: relative;
 }
 
-
-
-.job{
-
-background:white;
-
-padding:15px;
-
-margin:10px 0;
-
-border-radius:8px;
-
-box-shadow:0 2px 6px rgba(0,0,0,0.1);
-
+.dark-btn {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
 }
 
-
-
-button{
-
-padding:8px 15px;
-
-background:#0072ff;
-
-color:white;
-
-border:none;
-
-border-radius:5px;
-
-cursor:pointer;
-
+/* SEARCH */
+.search-box {
+  text-align: center;
+  margin-top: 10px;
+  position: relative;
 }
 
+.search-box input {
+  padding: 12px;
+  width: 320px;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+}
 
+/* SUGGESTIONS */
+#suggestions {
+  position: absolute;
+  top: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 320px;
+  background: white;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border-radius: 8px;
+  max-height: 180px;
+  overflow-y: auto;
+  z-index: 1000;
+}
 
+#suggestions li {
+  padding: 10px;
+  cursor: pointer;
+  color: black;
+  border-bottom: 1px solid #eee;
+}
+
+#suggestions li:hover {
+  background: #764ba2;
+  color: white;
+}
+
+/* RESUME */
+.upload-box {
+  text-align: center;
+  margin: 20px;
+  color: white;
+}
+
+.upload-box input {
+  margin-top: 10px;
+}
+
+button {
+  margin-top: 10px;
+  padding: 10px;
+  background: white;
+  color: #764ba2;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #764ba2;
+  color: white;
+}
+
+/* JOB CARDS */
+.container {
+  padding: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 20px;
+  margin: 15px;
+  width: 280px;
+  border-radius: 15px;
+}
 </style>
-
 </head>
-
 
 <body>
 
-
+<!-- HEADER -->
 <div class="header">
-
-Student Dashboard
-
+  🎓 Student Dashboard
+  <button class="dark-btn" onclick="toggleDark()">🌙</button>
 </div>
 
-
-
-<div class="container">
-
-
-<h3>Available Jobs</h3>
-
-
-
-<div class="job">
-
-<h4>Software Intern</h4>
-
-<p>Company: Google</p>
-
-<p>Location: Remote</p>
-
-<button>Apply</button>
-
+<!-- SEARCH -->
+<div class="search-box">
+  <input id="searchBox" placeholder="🔍 Search jobs, companies...">
+  <ul id="suggestions"></ul>
 </div>
 
-
-
-<div class="job">
-
-<h4>Web Developer</h4>
-
-<p>Company: Amazon</p>
-
-<p>Location: Bangalore</p>
-
-<button>Apply</button>
-
+<!-- RESUME UPLOAD -->
+<div class="upload-box">
+  <h3>Upload Resume (PDF)</h3>
+  <input type="file" id="resumeFile">
+  <button onclick="uploadResume()">Upload Resume</button>
+  <p id="uploadStatus"></p>
 </div>
 
+<!-- JOBS -->
+<div class="container" id="jobs"></div>
 
+<script>
 
-<div class="job">
+const userId = localStorage.getItem("userId") || "demoUser";
 
-<h4>Data Analyst</h4>
+let allJobs = [];
 
-<p>Company: Microsoft</p>
+const searchBox = document.getElementById("searchBox");
+const suggestions = document.getElementById("suggestions");
 
-<p>Location: Hyderabad</p>
+// ================= LOAD JOBS =================
+async function loadJobs() {
+  try {
+    const res = await fetch(`http://localhost:5001/api/student/jobs/${userId}`);
+    const data = await res.json();
+    allJobs = data;
+    displayJobs(data);
+  } catch (err) {
+    console.log("Job load error:", err);
+  }
+}
 
-<button>Apply</button>
+// ================= DISPLAY JOBS =================
+function displayJobs(data) {
 
-</div>
+  const container = document.getElementById("jobs");
 
+  if (!data || data.length === 0) {
+    container.innerHTML = "<h3 style='color:white'>No jobs found ❌</h3>";
+    return;
+  }
 
+  container.innerHTML = data.map(job => `
+    <div class="card">
+      <h3>${job.title}</h3>
+      <p><b>${job.company}</b></p>
+      <p>${job.location}</p>
+      <button onclick="applyJob('${job._id}')">Apply</button>
+    </div>
+  `).join("");
+}
 
-</div>
+// ================= APPLY JOB =================
+async function applyJob(jobId) {
+  try {
+    await fetch("http://localhost:5001/api/student/apply", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ studentId: userId, jobId })
+    });
 
+    alert("Applied Successfully ✅");
+
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+// ================= SEARCH + AUTOCOMPLETE =================
+let timeout;
+
+searchBox.addEventListener("input", async () => {
+
+  clearTimeout(timeout);
+
+  timeout = setTimeout(async () => {
+
+    const query = searchBox.value.toLowerCase().trim();
+
+    if (!query) {
+      suggestions.innerHTML = "";
+      displayJobs(allJobs);
+      return;
+    }
+
+    // FRONTEND FILTER
+    const filtered = allJobs.filter(job =>
+      job.title?.toLowerCase().includes(query) ||
+      job.company?.toLowerCase().includes(query)
+    );
+
+    displayJobs(filtered);
+
+    // BACKEND SEARCH (TRIE)
+    try {
+      const res = await fetch(`http://localhost:5001/api/student/search?q=${query}`);
+      const data = await res.json();
+
+      suggestions.innerHTML = "";
+
+      if (!Array.isArray(data)) return;
+
+      data.forEach(item => {
+        const li = document.createElement("li");
+        li.textContent = item;
+
+        li.onclick = () => {
+          searchBox.value = item;
+          suggestions.innerHTML = "";
+          searchBox.dispatchEvent(new Event("input"));
+        };
+
+        suggestions.appendChild(li);
+      });
+
+    } catch (err) {
+      console.log("Search error:", err);
+    }
+
+  }, 300);
+
+});
+
+// ================= DARK MODE =================
+function toggleDark() {
+  document.body.classList.toggle("dark");
+}
+
+// ================= UPLOAD RESUME =================
+async function uploadResume() {
+
+  const file = document.getElementById("resumeFile").files[0];
+
+  if (!file) {
+    alert("Please select a file");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("resume", file);
+
+  try {
+    await fetch(`http://localhost:5001/api/student/upload-resume/${userId}`, {
+      method: "POST",
+      body: formData
+    });
+
+    document.getElementById("uploadStatus").innerText = "Uploaded ✅";
+
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+// INIT
+loadJobs();
+
+</script>
 
 </body>
-
 </html>

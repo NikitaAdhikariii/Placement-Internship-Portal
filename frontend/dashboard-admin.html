@@ -1,110 +1,91 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-
-<title>Admin Panel</title>
+<title>Admin Dashboard</title>
 
 <style>
-
 body{
-
-font-family:Arial;
-
-background:#f0fff4;
-
 margin:0;
-
+font-family:Segoe UI;
+background:linear-gradient(135deg,#232526,#414345);
+color:white;
 }
-
-
 
 .header{
-
-background:#00a86b;
-
-color:white;
-
-padding:15px;
-
 text-align:center;
-
-font-size:22px;
-
+padding:20px;
+font-size:26px;
 }
-
-
 
 .container{
-
-padding:20px;
-
+display:flex;
+justify-content:center;
+gap:20px;
+flex-wrap:wrap;
+padding:30px;
 }
 
-
-
-.box{
-
-background:white;
-
-padding:15px;
-
-margin:10px 0;
-
-border-radius:8px;
-
-box-shadow:0 2px 6px rgba(0,0,0,0.1);
-
+.card{
+background:rgba(255,255,255,0.1);
+padding:30px;
+border-radius:15px;
+width:200px;
+text-align:center;
+box-shadow:0 5px 20px rgba(0,0,0,0.3);
+transition:0.3s;
 }
 
+.card:hover{
+transform:scale(1.05);
+}
 
+h2{
+margin:0;
+}
 
 </style>
 
 </head>
 
-
 <body>
 
-
-<div class="header">
-
-Admin Dashboard
-
-</div>
-
-
+<div class="header">Admin Dashboard 📊</div>
 
 <div class="container">
 
+<div class="card">
+<h3>Students</h3>
+<h2 id="students">0</h2>
+</div>
 
-<div class="box">
+<div class="card">
+<h3>Companies</h3>
+<h2 id="companies">0</h2>
+</div>
 
-Total Students: 120
+<div class="card">
+<h3>Jobs</h3>
+<h2 id="jobs">0</h2>
+</div>
 
 </div>
 
+<script>
 
+async function loadAdmin() {
+  const res = await fetch("http://localhost:5001/api/admin/stats");
+  const data = await res.json();
 
-<div class="box">
+  document.getElementById("students").innerText = data.stats.students;
+  document.getElementById("companies").innerText = data.stats.companies;
+  document.getElementById("jobs").innerText = data.stats.jobs;
 
-Total Companies: 35
+  // show jobs list
+  console.log("Jobs:", data.jobs);
+}
+loadAdmin();
 
-</div>
-
-
-
-<div class="box">
-
-Jobs Posted: 80
-
-</div>
-
-
-
-</div>
-
+</script>
 
 </body>
-
 </html>
