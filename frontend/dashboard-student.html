@@ -16,7 +16,6 @@ body {
   color: white;
 }
 
-/* HEADER */
 .header {
   color: white;
   text-align: center;
@@ -36,7 +35,6 @@ body {
   cursor: pointer;
 }
 
-/* SEARCH */
 .search-box {
   text-align: center;
   margin-top: 10px;
@@ -51,7 +49,6 @@ body {
   outline: none;
 }
 
-/* SUGGESTIONS */
 #suggestions {
   position: absolute;
   top: 50px;
@@ -80,7 +77,6 @@ body {
   color: white;
 }
 
-/* RESUME */
 .upload-box {
   text-align: center;
   margin: 20px;
@@ -106,7 +102,6 @@ button:hover {
   color: white;
 }
 
-/* JOB CARDS */
 .container {
   padding: 20px;
   display: flex;
@@ -121,6 +116,117 @@ button:hover {
   margin: 15px;
   width: 280px;
   border-radius: 15px;
+}
+
+/* ELIGIBILITY */
+.eligibility-section {
+  text-align: center;
+  margin: 30px 20px;
+  color: white;
+}
+
+.eligibility-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 16px;
+  gap: 12px;
+}
+
+.eligibility-card {
+  background: rgba(255,255,255,0.15);
+  border-radius: 12px;
+  padding: 16px;
+  width: 220px;
+  color: white;
+  text-align: left;
+}
+
+.match-score {
+  font-size: 28px;
+  font-weight: bold;
+  margin: 6px 0;
+}
+
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #000;
+  margin-top: 6px;
+}
+
+.skill-tag {
+  display: inline-block;
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  margin: 2px;
+  background: rgba(255,255,255,0.2);
+  color: white;
+}
+
+/* STUDY MATERIAL */
+.study-section {
+  margin: 30px 20px;
+  color: white;
+  text-align: center;
+}
+
+.study-content {
+  max-width: 700px;
+  margin: 16px auto 0;
+  text-align: left;
+}
+
+.study-card {
+  background: rgba(255,255,255,0.15);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 12px;
+}
+
+.study-card h4 {
+  margin: 12px 0 6px;
+  font-size: 15px;
+}
+
+.study-card p {
+  margin: 4px 0;
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+.diff-badge {
+  display: inline-block;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-left: 6px;
+  color: #000;
+  font-weight: bold;
+}
+
+.study-tip {
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 8px;
+  font-size: 13px;
+  border-left: 3px solid rgba(255,255,255,0.4);
+}
+
+select {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: none;
+  font-size: 14px;
+  background: white;
+  color: #764ba2;
+  cursor: pointer;
+  margin-top: 10px;
 }
 </style>
 </head>
@@ -150,10 +256,27 @@ button:hover {
 <!-- JOBS -->
 <div class="container" id="jobs"></div>
 
+<!-- ELIGIBILITY CHECKER -->
+<div class="eligibility-section">
+  <h3>Check Your Eligibility</h3>
+  <p style="opacity:0.8;font-size:14px">Based on your skills, see which companies you qualify for</p>
+  <button onclick="checkEligibility()">Check Eligibility</button>
+  <div class="eligibility-grid" id="eligibility-results"></div>
+</div>
+
+<!-- STUDY MATERIAL -->
+<div class="study-section">
+  <h3>Company Prep Material</h3>
+  <p style="opacity:0.8;font-size:14px">Select a company to see interview rounds, topics & resources</p>
+  <select id="study-company" onchange="loadStudyMaterial()">
+    <option value="">Select a company...</option>
+  </select>
+  <div class="study-content" id="study-content"></div>
+</div>
+
 <script>
 
 const userId = localStorage.getItem("userId") || "demoUser";
-
 let allJobs = [];
 
 const searchBox = document.getElementById("searchBox");
@@ -173,14 +296,11 @@ async function loadJobs() {
 
 // ================= DISPLAY JOBS =================
 function displayJobs(data) {
-
   const container = document.getElementById("jobs");
-
   if (!data || data.length === 0) {
     container.innerHTML = "<h3 style='color:white'>No jobs found ❌</h3>";
     return;
   }
-
   container.innerHTML = data.map(job => `
     <div class="card">
       <h3>${job.title}</h3>
@@ -199,9 +319,7 @@ async function applyJob(jobId) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ studentId: userId, jobId })
     });
-
     alert("Applied Successfully ✅");
-
   } catch (err) {
     console.log(err);
   }
@@ -211,55 +329,38 @@ async function applyJob(jobId) {
 let timeout;
 
 searchBox.addEventListener("input", async () => {
-
   clearTimeout(timeout);
-
   timeout = setTimeout(async () => {
-
     const query = searchBox.value.toLowerCase().trim();
-
     if (!query) {
       suggestions.innerHTML = "";
       displayJobs(allJobs);
       return;
     }
-
-    // FRONTEND FILTER
     const filtered = allJobs.filter(job =>
       job.title?.toLowerCase().includes(query) ||
       job.company?.toLowerCase().includes(query)
     );
-
     displayJobs(filtered);
-
-    // BACKEND SEARCH (TRIE)
     try {
       const res = await fetch(`http://localhost:5001/api/student/search?q=${query}`);
       const data = await res.json();
-
       suggestions.innerHTML = "";
-
       if (!Array.isArray(data)) return;
-
       data.forEach(item => {
         const li = document.createElement("li");
         li.textContent = item;
-
         li.onclick = () => {
           searchBox.value = item;
           suggestions.innerHTML = "";
           searchBox.dispatchEvent(new Event("input"));
         };
-
         suggestions.appendChild(li);
       });
-
     } catch (err) {
       console.log("Search error:", err);
     }
-
   }, 300);
-
 });
 
 // ================= DARK MODE =================
@@ -267,34 +368,166 @@ function toggleDark() {
   document.body.classList.toggle("dark");
 }
 
-// ================= UPLOAD RESUME =================
+// ================= UPLOAD RESUME + PARSE SKILLS =================
 async function uploadResume() {
-
   const file = document.getElementById("resumeFile").files[0];
+  if (!file) { alert("Please select a file"); return; }
 
-  if (!file) {
-    alert("Please select a file");
-    return;
-  }
+  document.getElementById("uploadStatus").innerText = "Parsing resume...";
 
   const formData = new FormData();
   formData.append("resume", file);
 
   try {
-    await fetch(`http://localhost:5001/api/student/upload-resume/${userId}`, {
+    // Parse skills from resume
+    const parseRes = await fetch("http://localhost:5001/api/student/parse-resume", {
       method: "POST",
       body: formData
     });
+    const parseData = await parseRes.json();
 
-    document.getElementById("uploadStatus").innerText = "Uploaded ✅";
+    // Save skills to localStorage
+    localStorage.setItem("studentSkills", JSON.stringify(parseData.skills));
+
+    document.getElementById("uploadStatus").innerText =
+      `Uploaded ✅ — Found ${parseData.skills.length} skills: ${parseData.skills.join(", ")}`;
+
+    // Also upload resume to student profile
+    const formData2 = new FormData();
+    formData2.append("resume", file);
+    await fetch(`http://localhost:5001/api/student/upload-resume/${userId}`, {
+      method: "POST",
+      body: formData2
+    });
 
   } catch (err) {
     console.log(err);
+    document.getElementById("uploadStatus").innerText = "Upload failed ❌";
   }
 }
 
-// INIT
+// ================= CHECK ELIGIBILITY =================
+async function checkEligibility() {
+  const rawSkills = localStorage.getItem("studentSkills");
+
+  if (!rawSkills || JSON.parse(rawSkills).length === 0) {
+    alert("Please upload your resume first so we can detect your skills.");
+    return;
+  }
+
+  const skills = JSON.parse(rawSkills);
+  const cgpa = parseFloat(localStorage.getItem("studentCGPA") || "7.5");
+  const branch = localStorage.getItem("studentBranch") || "CSE";
+
+  document.getElementById("eligibility-results").innerHTML =
+    "<p style='color:white'>Checking eligibility...</p>";
+
+  try {
+    const res = await fetch("http://localhost:5001/api/student/check-eligibility", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ skills, cgpa, branch })
+    });
+
+    const results = await res.json();
+
+    const byCompany = {};
+    results.forEach(r => {
+      if (!byCompany[r.company] || r.matchScore > byCompany[r.company].matchScore) {
+        byCompany[r.company] = r;
+      }
+    });
+
+    const sorted = Object.values(byCompany).sort((a, b) => b.matchScore - a.matchScore);
+    const container = document.getElementById("eligibility-results");
+
+    container.innerHTML = sorted.map(r => {
+      const color = r.matchScore >= 70 ? "#4ade80" : r.matchScore >= 40 ? "#fbbf24" : "#f87171";
+      const label = r.matchScore >= 70 ? "Eligible" : r.matchScore >= 40 ? "Partial match" : "Not eligible";
+      const bgBadge = r.matchScore >= 70 ? "#4ade80" : r.matchScore >= 40 ? "#fbbf24" : "#f87171";
+      return `
+        <div class="eligibility-card">
+          <div style="font-size:15px;font-weight:bold">${r.company}</div>
+          <div class="match-score" style="color:${color}">${r.matchScore}%</div>
+          <span class="badge" style="background:${bgBadge}">${label}</span>
+          <div style="margin-top:8px;font-size:12px;opacity:0.8">
+            Matched: ${r.matchedSkills.length > 0
+              ? r.matchedSkills.map(s => `<span class="skill-tag">${s}</span>`).join("")
+              : "<span style='opacity:0.5'>none</span>"}
+          </div>
+          <div style="font-size:12px;margin-top:4px;opacity:0.7">
+            Missing: ${r.missingSkills.length > 0
+              ? r.missingSkills.map(s => `<span class="skill-tag" style="background:rgba(248,113,113,0.3)">${s}</span>`).join("")
+              : "<span style='opacity:0.5'>none</span>"}
+          </div>
+        </div>`;
+    }).join("");
+
+  } catch (err) {
+    console.log("Eligibility error:", err);
+    document.getElementById("eligibility-results").innerHTML =
+      "<p style='color:white'>Could not load eligibility. Is the server running?</p>";
+  }
+}
+
+// ================= LOAD COMPANIES INTO DROPDOWN =================
+async function loadCompanies() {
+  try {
+    const res = await fetch("http://localhost:5001/api/study/companies");
+    const companies = await res.json();
+    const sel = document.getElementById("study-company");
+    companies.forEach(c => {
+      const opt = document.createElement("option");
+      opt.value = c;
+      opt.textContent = c;
+      sel.appendChild(opt);
+    });
+  } catch (err) {
+    console.log("Could not load companies:", err);
+  }
+}
+
+// ================= LOAD STUDY MATERIAL =================
+async function loadStudyMaterial() {
+  const company = document.getElementById("study-company").value;
+  if (!company) return;
+
+  try {
+    const res = await fetch(`http://localhost:5001/api/study/${company}`);
+    const d = await res.json();
+
+    document.getElementById("study-content").innerHTML = `
+      <div class="study-card">
+        <h3 style="margin:0 0 12px">${d.company} — Interview Prep</h3>
+
+        <h4>Interview rounds</h4>
+        ${d.rounds.map((r, i) => `<p>${i + 1}. ${r}</p>`).join("")}
+
+        <h4>Key topics</h4>
+        ${d.topics.map(t => {
+          const c = t.difficulty === "easy" ? "#4ade80" : t.difficulty === "medium" ? "#fbbf24" : "#f87171";
+          return `<p>${t.name}<span class="diff-badge" style="background:${c}">${t.difficulty}</span></p>`;
+        }).join("")}
+
+        <h4>Recommended resources</h4>
+        ${d.resources.map(r => `
+          <p>
+            <a href="${r.url}" target="_blank" style="color:#c4b5fd;text-decoration:none">${r.name}</a>
+            <span style="font-size:11px;opacity:0.6;margin-left:6px">[${r.type}]</span>
+          </p>`).join("")}
+
+        <div class="study-tip">
+          <b>Tip:</b> ${d.tip}
+        </div>
+      </div>`;
+  } catch (err) {
+    console.log("Study material error:", err);
+  }
+}
+
+// ================= INIT =================
 loadJobs();
+loadCompanies();
 
 </script>
 
