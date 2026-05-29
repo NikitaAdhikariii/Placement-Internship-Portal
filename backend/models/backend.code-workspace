@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "../../../placement-portal 2 /backend"
+		},
+		{
+			"path": "../../../placement-portal 2 /frontend"
+		},
+		{
+			"path": "../../../placement-portal 2 /node_modules"
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "frontend"
+	}
+}

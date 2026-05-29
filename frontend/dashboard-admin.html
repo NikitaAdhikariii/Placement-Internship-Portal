@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Real Connected Admin Dashboard</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+font-family:'Poppins',sans-serif;
+background:#f1f5f9;
+color:#0f172a;
+}
+
+/* HEADER */
+
+.header{
+background:white;
+padding:20px 35px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+box-shadow:0 4px 15px rgba(0,0,0,0.05);
+position:sticky;
+top:0;
+z-index:1000;
+}
+
+.logo{
+font-size:30px;
+font-weight:700;
+color:#2563eb;
+}
+
+.right-header{
+display:flex;
+align-items:center;
+gap:15px;
+}
+
+.live{
+padding:8px 16px;
+border-radius:30px;
+background:#dcfce7;
+color:#166534;
+font-size:14px;
+font-weight:600;
+}
+
+.btn{
+padding:10px 18px;
+border:none;
+border-radius:12px;
+font-weight:600;
+cursor:pointer;
+transition:0.3s;
+}
+
+.refresh{
+background:#2563eb;
+color:white;
+}
+
+.refresh:hover{
+background:#1d4ed8;
+}
+
+/* CONTAINER */
+
+.container{
+width:94%;
+max-width:1650px;
+margin:30px auto;
+}
+
+/* STATS */
+
+.stats-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:20px;
+margin-bottom:25px;
+}
+
+.stat-card{
+background:white;
+padding:25px;
+border-radius:20px;
+box-shadow:0 4px 18px rgba(0,0,0,0.05);
+}
+
+.stat-card h2{
+font-size:34px;
+color:#2563eb;
+margin-bottom:10px;
+}
+
+.stat-card p{
+color:#64748b;
+}
+
+/* GRID */
+
+.main-grid{
+display:grid;
+grid-template-columns:2fr 1fr;
+gap:25px;
+}
+
+@media(max-width:1100px){
+
+.main-grid{
+grid-template-columns:1fr;
+}
+
+}
+
+/* CARD */
+
+.card{
+background:white;
+padding:25px;
+border-radius:20px;
+box-shadow:0 4px 18px rgba(0,0,0,0.05);
+margin-bottom:25px;
+}
+
+/* TITLE */
+
+.section-title{
+font-size:24px;
+font-weight:700;
+margin-bottom:20px;
+}
+
+/* SEARCH */
+
+.search{
+width:100%;
+padding:14px;
+border-radius:12px;
+border:1px solid #cbd5e1;
+margin-bottom:20px;
+font-size:15px;
+outline:none;
+}
+
+/* JOB */
+
+.job-card{
+padding:18px;
+border-radius:16px;
+background:#f8fafc;
+border:1px solid #e2e8f0;
+margin-bottom:16px;
+}
+
+.job-card h3{
+color:#2563eb;
+margin-bottom:8px;
+}
+
+.job-card p{
+font-size:14px;
+margin-bottom:6px;
+color:#475569;
+}
+
+/* SKILLS */
+
+.skills{
+display:flex;
+flex-wrap:wrap;
+gap:8px;
+margin-top:10px;
+}
+
+.skill{
+padding:5px 12px;
+border-radius:20px;
+background:#dbeafe;
+color:#1d4ed8;
+font-size:12px;
+font-weight:600;
+}
+
+/* ACTIONS */
+
+.actions{
+display:flex;
+gap:10px;
+margin-top:15px;
+flex-wrap:wrap;
+}
+
+.approve{
+background:#dcfce7;
+color:#166534;
+}
+
+.reject{
+background:#fee2e2;
+color:#991b1b;
+}
+
+.delete{
+background:#dbeafe;
+color:#1d4ed8;
+}
+
+.approve:hover{
+background:#bbf7d0;
+}
+
+.reject:hover{
+background:#fecaca;
+}
+
+.delete:hover{
+background:#bfdbfe;
+}
+
+/* APPLICATION */
+
+.application-card{
+padding:18px;
+border-radius:16px;
+background:#f8fafc;
+border:1px solid #e2e8f0;
+margin-bottom:16px;
+}
+
+.application-card h4{
+color:#2563eb;
+margin-bottom:8px;
+}
+
+.status{
+display:inline-block;
+padding:6px 12px;
+border-radius:20px;
+font-size:12px;
+font-weight:600;
+margin-top:10px;
+}
+
+.shortlisted{
+background:#dcfce7;
+color:#166534;
+}
+
+.pending{
+background:#fef3c7;
+color:#92400e;
+}
+
+.rejected{
+background:#fee2e2;
+color:#991b1b;
+}
+
+/* USERS */
+
+.user-card{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:16px;
+border-radius:14px;
+background:#f8fafc;
+border:1px solid #e2e8f0;
+margin-bottom:15px;
+}
+
+.user-left{
+display:flex;
+align-items:center;
+gap:14px;
+}
+
+.avatar{
+width:48px;
+height:48px;
+border-radius:50%;
+background:#2563eb;
+color:white;
+display:flex;
+align-items:center;
+justify-content:center;
+font-weight:700;
+}
+
+.role{
+padding:5px 12px;
+border-radius:20px;
+font-size:12px;
+font-weight:600;
+}
+
+.student{
+background:#dcfce7;
+color:#166534;
+}
+
+.company{
+background:#dbeafe;
+color:#1d4ed8;
+}
+
+.admin{
+background:#fee2e2;
+color:#991b1b;
+}
+
+/* SCROLL */
+
+.scroll{
+max-height:600px;
+overflow-y:auto;
+padding-right:5px;
+}
+
+::-webkit-scrollbar{
+width:8px;
+}
+
+::-webkit-scrollbar-thumb{
+background:#2563eb;
+border-radius:20px;
+}
+
+/* FOOTER */
+
+.footer{
+padding:30px;
+text-align:center;
+color:#64748b;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- HEADER -->
+
+<div class="header">
+
+<div class="logo">
+📊 Real Connected Admin Dashboard
+</div>
+
+<div class="right-header">
+
+<div class="live">
+🟢 Live Connected System
+</div>
+
+<button class="btn refresh" onclick="refreshDashboard()">
+🔄 Refresh
+</button>
+
+</div>
+
+</div>
+
+<!-- CONTAINER -->
+
+<div class="container">
+
+<!-- STATS -->
+
+<div class="stats-grid">
+
+<div class="stat-card">
+<h2 id="studentsCount">0</h2>
+<p>👨‍🎓 Students</p>
+</div>
+
+<div class="stat-card">
+<h2 id="companiesCount">0</h2>
+<p>🏢 Companies</p>
+</div>
+
+<div class="stat-card">
+<h2 id="jobsCount">0</h2>
+<p>💼 Jobs Posted</p>
+</div>
+
+<div class="stat-card">
+<h2 id="applicationsCount">0</h2>
+<p>📩 Applications</p>
+</div>
+
+</div>
+
+<!-- GRID -->
+
+<div class="main-grid">
+
+<!-- LEFT -->
+
+<div>
+
+<!-- JOBS -->
+
+<div class="card">
+
+<h2 class="section-title">
+📋 Jobs Posted by Companies
+</h2>
+
+<input
+type="text"
+class="search"
+placeholder="Search jobs..."
+id="searchBox"
+onkeyup="searchJobs()"
+>
+
+<div class="scroll" id="jobsContainer"></div>
+
+</div>
+
+<!-- APPLICATIONS -->
+
+<div class="card">
+
+<h2 class="section-title">
+📩 Real Student Applications
+</h2>
+
+<div class="scroll" id="applicationsContainer"></div>
+
+</div>
+
+</div>
+
+<!-- RIGHT -->
+
+<div>
+
+<!-- USERS -->
+
+<div class="card">
+
+<h2 class="section-title">
+👥 Connected Users
+</h2>
+
+<div id="usersContainer"></div>
+
+</div>
+
+<!-- CONTROLS -->
+
+<div class="card">
+
+<h2 class="section-title">
+⚙️ Admin Controls
+</h2>
+
+<div class="actions">
+
+<button class="btn approve" onclick="sendNotification()">
+Send Notification
+</button>
+
+<button class="btn delete" onclick="exportData()">
+Export Data
+</button>
+
+<button class="btn reject" onclick="clearRejected()">
+Clear Rejected
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="footer">
+Smart Placement Admin System 🚀
+</div>
+
+<script>
+
+/* =========================
+GET REAL CONNECTED DATA
+========================= */
+
+/* USERS */
+
+let users =
+JSON.parse(localStorage.getItem("users")) || [];
+
+/* JOBS */
+
+let jobs =
+JSON.parse(localStorage.getItem("companyJobs")) || [];
+
+/* APPLICATIONS */
+
+let applications =
+JSON.parse(localStorage.getItem("studentApplications")) || [];
+
+/* =========================
+DEMO AUTO DATA
+ONLY IF EMPTY
+========================= */
+
+if(users.length === 0){
+
+users = [
+
+{
+name:"Nikita Student",
+email:"student@gmail.com",
+role:"student"
+},
+
+{
+name:"Nikita Company",
+email:"company@gmail.com",
+role:"company"
+},
+
+{
+name:"Nikita Admin",
+email:"admin@gmail.com",
+role:"admin"
+}
+
+];
+
+localStorage.setItem(
+"users",
+JSON.stringify(users)
+);
+
+}
+
+/* IMPORTANT FIX */
+
+if(applications.length === 0){
+
+applications = [
+
+{
+student:"Nikita Adhikari",
+company:"Amazon",
+role:"Backend Engineer",
+status:"Pending"
+},
+
+{
+student:"Nikita Adhikari",
+company:"Google",
+role:"Frontend Developer",
+status:"Pending"
+},
+
+{
+student:"Nikita Adhikari",
+company:"Microsoft",
+role:"Cloud Engineer",
+status:"Shortlisted"
+}
+
+];
+
+localStorage.setItem(
+"studentApplications",
+JSON.stringify(applications)
+);
+
+}
+
+/* IMPORTANT FIX */
+
+if(jobs.length === 0){
+
+jobs = [
+
+{
+title:"Backend Engineer",
+company:"Amazon",
+location:"Bangalore",
+salary:"18L",
+type:"Off Campus",
+skills:["Java","Spring Boot"]
+},
+
+{
+title:"Frontend Developer",
+company:"Google",
+location:"Hyderabad",
+salary:"24L",
+type:"On Campus",
+skills:["React","JavaScript"]
+},
+
+{
+title:"Cloud Engineer",
+company:"Microsoft",
+location:"Noida",
+salary:"20L",
+type:"Hybrid",
+skills:["Azure","DevOps"]
+}
+
+];
+
+localStorage.setItem(
+"companyJobs",
+JSON.stringify(jobs)
+);
+
+}
+
+/* =========================
+LOAD COUNTS
+========================= */
+
+function loadCounts(){
+
+document.getElementById("studentsCount").innerHTML =
+users.filter(
+u => u.role === "student"
+).length;
+
+document.getElementById("companiesCount").innerHTML =
+users.filter(
+u => u.role === "company"
+).length;
+
+document.getElementById("jobsCount").innerHTML =
+jobs.length;
+
+document.getElementById("applicationsCount").innerHTML =
+applications.length;
+
+}
+
+/* =========================
+LOAD USERS
+========================= */
+
+function loadUsers(){
+
+const container =
+document.getElementById("usersContainer");
+
+container.innerHTML = "";
+
+users.forEach(user=>{
+
+container.innerHTML += `
+
+<div class="user-card">
+
+<div class="user-left">
+
+<div class="avatar">
+${user.name.charAt(0)}
+</div>
+
+<div>
+
+<h4>
+${user.name}
+</h4>
+
+<p>
+${user.email}
+</p>
+
+</div>
+
+</div>
+
+<div class="role ${user.role}">
+${user.role}
+</div>
+
+</div>
+
+`;
+
+});
+
+}
+
+/* =========================
+LOAD JOBS
+========================= */
+
+function loadJobs(){
+
+const container =
+document.getElementById("jobsContainer");
+
+container.innerHTML = "";
+
+jobs.forEach((job,index)=>{
+
+container.innerHTML += `
+
+<div class="job-card">
+
+<h3>
+${job.title} - ${job.company}
+</h3>
+
+<p>
+📍 ${job.location}
+</p>
+
+<p>
+💰 ₹${job.salary}
+</p>
+
+<p>
+🎯 ${job.type}
+</p>
+
+<div class="skills">
+
+${job.skills.map(skill=>`
+
+<div class="skill">
+${skill}
+</div>
+
+`).join("")}
+
+</div>
+
+<div class="actions">
+
+<button
+class="btn approve"
+onclick="approveJob(${index})"
+>
+Approve
+</button>
+
+<button
+class="btn reject"
+onclick="rejectJob(${index})"
+>
+Reject
+</button>
+
+<button
+class="btn delete"
+onclick="deleteJob(${index})"
+>
+Delete
+</button>
+
+</div>
+
+</div>
+
+`;
+
+});
+
+}
+
+/* =========================
+LOAD APPLICATIONS
+========================= */
+
+function loadApplications(){
+
+const container =
+document.getElementById("applicationsContainer");
+
+container.innerHTML = "";
+
+applications.forEach((app,index)=>{
+
+let cls =
+app.status.toLowerCase();
+
+container.innerHTML += `
+
+<div class="application-card">
+
+<h4>
+${app.student}
+</h4>
+
+<p>
+Applied for ${app.role}
+</p>
+
+<p>
+🏢 ${app.company}
+</p>
+
+<span class="status ${cls}">
+${app.status}
+</span>
+
+<div class="actions">
+
+<button
+class="btn approve"
+onclick="shortlistStudent(${index})"
+>
+Shortlist
+</button>
+
+<button
+class="btn reject"
+onclick="rejectStudent(${index})"
+>
+Reject
+</button>
+
+</div>
+
+</div>
+
+`;
+
+});
+
+}
+
+/* =========================
+SEARCH
+========================= */
+
+function searchJobs(){
+
+let input =
+document.getElementById("searchBox")
+.value.toLowerCase();
+
+let cards =
+document.querySelectorAll(".job-card");
+
+cards.forEach(card=>{
+
+if(
+card.innerText.toLowerCase()
+.includes(input)
+){
+
+card.style.display = "block";
+
+}else{
+
+card.style.display = "none";
+
+}
+
+});
+
+}
+
+/* =========================
+APPROVE JOB
+========================= */
+
+function approveJob(index){
+
+alert(
+jobs[index].title +
+" approved successfully ✅"
+);
+
+}
+
+/* =========================
+REJECT JOB
+========================= */
+
+function rejectJob(index){
+
+alert(
+jobs[index].title +
+" rejected ❌"
+);
+
+}
+
+/* =========================
+DELETE JOB
+========================= */
+
+function deleteJob(index){
+
+if(confirm("Delete this job?")){
+
+jobs.splice(index,1);
+
+localStorage.setItem(
+"companyJobs",
+JSON.stringify(jobs)
+);
+
+loadJobs();
+loadCounts();
+
+}
+
+}
+
+/* =========================
+SHORTLIST STUDENT
+========================= */
+
+function shortlistStudent(index){
+
+applications[index].status =
+"Shortlisted";
+
+localStorage.setItem(
+"studentApplications",
+JSON.stringify(applications)
+);
+
+loadApplications();
+
+}
+
+/* =========================
+REJECT STUDENT
+========================= */
+
+function rejectStudent(index){
+
+applications[index].status =
+"Rejected";
+
+localStorage.setItem(
+"studentApplications",
+JSON.stringify(applications)
+);
+
+loadApplications();
+
+}
+
+/* =========================
+SEND NOTIFICATION
+========================= */
+
+function sendNotification(){
+
+alert(
+"Notification sent to all connected users 🔔"
+);
+
+}
+
+/* =========================
+EXPORT DATA
+========================= */
+
+function exportData(){
+
+const data = {
+
+users,
+jobs,
+applications
+
+};
+
+console.log(data);
+
+alert(
+"All data exported in console ✅"
+);
+
+}
+
+/* =========================
+CLEAR REJECTED
+========================= */
+
+function clearRejected(){
+
+applications =
+applications.filter(
+app => app.status !== "Rejected"
+);
+
+localStorage.setItem(
+"studentApplications",
+JSON.stringify(applications)
+);
+
+loadApplications();
+loadCounts();
+
+}
+
+/* =========================
+REFRESH
+========================= */
+
+function refreshDashboard(){
+
+jobs =
+JSON.parse(localStorage.getItem("companyJobs")) || [];
+
+applications =
+JSON.parse(localStorage.getItem("studentApplications")) || [];
+
+users =
+JSON.parse(localStorage.getItem("users")) || [];
+
+loadCounts();
+loadUsers();
+loadJobs();
+loadApplications();
+
+alert(
+"Dashboard refreshed successfully ✅"
+);
+
+}
+
+/* =========================
+INITIAL LOAD
+========================= */
+
+loadCounts();
+loadUsers();
+loadJobs();
+loadApplications();
+
+</script>
+
+</body>
+
+</html>

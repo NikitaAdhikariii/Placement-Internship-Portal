@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Company Dashboard</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#0a0a0f;color:#f0ede8;font-family:'Segoe UI',sans-serif;min-height:100vh;}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:70px;background:#13131a;border-right:1px solid rgba(255,255,255,0.07);display:flex;flex-direction:column;align-items:center;padding:20px 0;gap:8px;z-index:10;}
+.logo{width:38px;height:38px;background:linear-gradient(135deg,#ff5c3a,#ff9a3c);border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;color:white;margin-bottom:16px;}
+.main{margin-left:70px;padding:28px 36px;}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;}
+.page-title{font-size:26px;font-weight:800;letter-spacing:-0.5px;}
+.page-title span{background:linear-gradient(135deg,#ff5c3a,#ff9a3c);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.live-badge{background:#13131a;border:1px solid rgba(255,255,255,0.07);border-radius:99px;padding:7px 14px;font-size:12px;color:#6b6878;display:flex;align-items:center;gap:7px;}
+.dot{width:7px;height:7px;border-radius:50%;background:#34d399;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px;}
+.stat{background:#13131a;border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:18px;}
+.stat-label{font-size:11px;color:#6b6878;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;}
+.stat-value{font-size:30px;font-weight:700;}
+.stat-sub{font-size:12px;color:#34d399;margin-top:4px;}
+.grid{display:grid;grid-template-columns:1fr 360px;gap:22px;}
+.panel{background:#13131a;border:1px solid rgba(255,255,255,0.07);border-radius:18px;padding:26px;}
+.panel-title{font-size:17px;font-weight:700;margin-bottom:22px;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.form-group{display:flex;flex-direction:column;gap:7px;}
+.form-group.full{grid-column:1/-1;}
+label{font-size:11px;color:#6b6878;text-transform:uppercase;letter-spacing:0.04em;}
+.field{position:relative;}
+.field-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none;}
+input,select{width:100%;background:#1c1c28;border:1px solid rgba(255,255,255,0.07);border-radius:9px;color:#f0ede8;font-size:13px;padding:11px 12px 11px 36px;outline:none;transition:border-color 0.2s;}
+input:focus,select:focus{border-color:#ff5c3a;box-shadow:0 0 0 3px rgba(255,92,58,0.1);}
+select option{background:#1c1c28;}
+.salary-val{font-size:20px;font-weight:700;color:#ff9a3c;margin-bottom:6px;}
+input[type=range]{padding:0;height:4px;border:none;background:#1c1c28;box-shadow:none;accent-color:#ff5c3a;cursor:pointer;}
+.divider{height:1px;background:rgba(255,255,255,0.07);margin:20px 0;}
+.section-lbl{font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#6b6878;margin-bottom:10px;}
+.branch-pills{display:flex;flex-wrap:wrap;gap:7px;}
+.pill{padding:7px 13px;border-radius:7px;border:1px solid rgba(255,255,255,0.07);background:#1c1c28;color:#6b6878;font-size:12px;cursor:pointer;transition:all 0.2s;user-select:none;}
+.pill.on{background:rgba(255,92,58,0.15);border-color:#ff5c3a;color:#ff9a3c;}
+.skills-area{background:#1c1c28;border:1px solid rgba(255,255,255,0.07);border-radius:9px;padding:9px;min-height:48px;display:flex;flex-wrap:wrap;gap:5px;align-items:center;cursor:text;transition:border-color 0.2s;}
+.skills-area:focus-within{border-color:#ff5c3a;}
+.stag{background:rgba(255,92,58,0.15);border:1px solid rgba(255,92,58,0.3);color:#ff9a3c;border-radius:5px;padding:3px 9px;font-size:12px;display:flex;align-items:center;gap:5px;}
+.stag button{background:none;border:none;color:#ff5c3a;cursor:pointer;padding:0;width:auto;font-size:13px;margin:0;}
+#skill-input{border:none;background:none;color:#f0ede8;font-size:13px;padding:3px 5px;outline:none;min-width:100px;flex:1;box-shadow:none;}
+.submit-btn{width:100%;padding:13px;background:linear-gradient(135deg,#ff5c3a,#ff9a3c);border:none;border-radius:11px;color:white;font-size:14px;font-weight:700;cursor:pointer;margin-top:20px;transition:opacity 0.2s;}
+.submit-btn:hover{opacity:0.9;}
+.toast{position:fixed;bottom:28px;right:28px;background:#1c1c28;border:1px solid rgba(255,255,255,0.07);border-left:3px solid #34d399;border-radius:11px;padding:14px 18px;font-size:13px;z-index:100;transform:translateY(80px);opacity:0;transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1);min-width:260px;display:flex;align-items:center;gap:10px;}
+.toast.show{transform:translateY(0);opacity:1;}
+.job-item{padding:13px;background:#1c1c28;border-radius:11px;margin-bottom:9px;border:1px solid rgba(255,255,255,0.07);transition:border-color 0.2s;}
+.job-item:hover{border-color:rgba(255,92,58,0.3);}
+.job-item-title{font-size:13px;font-weight:500;margin-bottom:3px;}
+.job-item-meta{font-size:11px;color:#6b6878;display:flex;gap:8px;flex-wrap:wrap;}
+.job-skill{background:rgba(255,92,58,0.1);color:#ff9a3c;border-radius:3px;padding:1px 6px;font-size:10px;}
+.empty{text-align:center;padding:28px 0;color:#6b6878;font-size:13px;}
+</style>
+</head>
+<body>
+
+<nav class="sidebar">
+  <div class="logo">CP</div>
+</nav>
+
+<div class="main">
+  <div class="topbar">
+    <div>
+      <div class="page-title">Company <span>Dashboard</span></div>
+      <div style="font-size:12px;color:#6b6878;margin-top:3px">Post jobs and manage applicants</div>
+    </div>
+    <div class="live-badge"><div class="dot"></div>Portal live</div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-label">Jobs posted</div><div class="stat-value" id="stat-jobs">0</div><div class="stat-sub">this session</div></div>
+    <div class="stat"><div class="stat-label">Skills tagged</div><div class="stat-value" id="stat-skills">0</div></div>
+    <div class="stat"><div class="stat-label">Locations</div><div class="stat-value" id="stat-locs">0</div></div>
+    <div class="stat"><div class="stat-label">Avg salary</div><div class="stat-value" id="stat-sal">—</div></div>
+  </div>
+
+  <div class="grid">
+    <div class="panel">
+      <div class="panel-title">Post a new job</div>
+
+      <div class="section-lbl">Basic info</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Job title</label>
+          <div class="field"><span class="field-icon">💼</span><input id="title" placeholder="e.g. Backend Engineer"></div>
+        </div>
+        <div class="form-group">
+          <label>Company name</label>
+          <div class="field"><span class="field-icon">🏢</span><input id="company" placeholder="e.g. Razorpay"></div>
+        </div>
+        <div class="form-group">
+          <label>Location</label>
+          <div class="field"><span class="field-icon">📍</span>
+            <input id="location" placeholder="e.g. Bangalore" list="cities">
+            <datalist id="cities">
+              <option>Bangalore</option><option>Hyderabad</option><option>Mumbai</option>
+              <option>Delhi</option><option>Pune</option><option>Chennai</option>
+              <option>Noida</option><option>Gurgaon</option><option>Remote</option>
+            </datalist>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Min CGPA</label>
+          <div class="field"><span class="field-icon">🎓</span>
+            <select id="cgpa">
+              <option value="6">6.0+</option><option value="6.5">6.5+</option>
+              <option value="7" selected>7.0+</option><option value="7.5">7.5+</option>
+              <option value="8">8.0+</option><option value="8.5">8.5+</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+      <div class="section-lbl">Salary</div>
+      <div class="salary-val" id="salary-label">₹8,00,000 / year</div>
+      <input type="range" id="salary" min="300000" max="3000000" step="50000" value="800000" oninput="updateSalary(this.value)">
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:#6b6878;margin-top:5px"><span>₹3L</span><span>₹30L</span></div>
+
+      <div class="divider"></div>
+      <div class="section-lbl">Target branch</div>
+      <div class="branch-pills">
+        <div class="pill on" onclick="toggleBranch(this)" data-branch="CSE">CSE</div>
+        <div class="pill" onclick="toggleBranch(this)" data-branch="IT">IT</div>
+        <div class="pill" onclick="toggleBranch(this)" data-branch="ECE">ECE</div>
+        <div class="pill" onclick="toggleBranch(this)" data-branch="Mechanical">Mechanical</div>
+        <div class="pill" onclick="toggleBranch(this)" data-branch="Electrical">Electrical</div>
+        <div class="pill" onclick="toggleBranch(this)" data-branch="All">All branches</div>
+      </div>
+
+      <div class="divider"></div>
+      <div class="section-lbl">Skills — press Enter or comma to add</div>
+      <div class="skills-area" id="skills-area" onclick="document.getElementById('skill-input').focus()">
+        <input id="skill-input" placeholder="e.g. React, Node.js..." onkeydown="handleSkill(event)">
+      </div>
+      <div style="margin-top:7px;display:flex;flex-wrap:wrap;gap:5px" id="suggested-skills"></div>
+
+      <button class="submit-btn" onclick="postJob()">✦ &nbsp;Publish Job Posting</button>
+    </div>
+
+    <div class="panel">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+        <div class="panel-title" style="margin:0">Recent postings</div>
+        <span style="font-size:12px;color:#ff5c3a;cursor:pointer" onclick="loadMyJobs()">Refresh ↻</span>
+      </div>
+      <div id="recent-jobs">
+        <div class="empty">📭<br>No jobs posted yet<br><span style="font-size:11px">Your postings will appear here</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">
+  <span id="toast-icon">✅</span>
+  <div><div style="font-weight:500" id="toast-title">Done!</div><div style="font-size:11px;color:#6b6878;margin-top:1px" id="toast-sub"></div></div>
+</div>
+
+<script>
+const skills = [];
+const postedJobs = [];
+let selectedBranch = "CSE";
+const SUGGESTED = ["React","Node.js","Python","Java","Go","AWS","Docker","PostgreSQL","MongoDB","TypeScript","Kotlin","Redis","Kubernetes","Spring Boot","TensorFlow"];
+
+function renderSuggested() {
+  const wrap = document.getElementById("suggested-skills");
+  const avail = SUGGESTED.filter(s => !skills.includes(s)).slice(0,8);
+  wrap.innerHTML = avail.map(s =>
+    `<span onclick="addSkill('${s}')" style="font-size:11px;padding:3px 9px;border-radius:5px;border:1px dashed rgba(255,92,58,0.3);color:#6b6878;cursor:pointer">${s}</span>`
+  ).join("");
+}
+renderSuggested();
+
+function handleSkill(e) {
+  if (e.key==="Enter"||e.key===",") {
+    e.preventDefault();
+    const val = e.target.value.trim().replace(/,/g,"");
+    if (val) addSkill(val);
+    e.target.value="";
+  } else if (e.key==="Backspace"&&!e.target.value&&skills.length) {
+    removeSkill(skills.length-1);
+  }
+}
+
+function addSkill(val) {
+  if (!val||skills.includes(val)) return;
+  skills.push(val);
+  renderSkills(); renderSuggested(); updateStats();
+}
+
+function removeSkill(i) {
+  skills.splice(i,1);
+  renderSkills(); renderSuggested(); updateStats();
+}
+
+function renderSkills() {
+  const area = document.getElementById("skills-area");
+  const input = document.getElementById("skill-input");
+  area.querySelectorAll(".stag").forEach(t=>t.remove());
+  skills.forEach((s,i) => {
+    const tag = document.createElement("div");
+    tag.className="stag";
+    tag.innerHTML=`${s}<button onclick="removeSkill(${i})">×</button>`;
+    area.insertBefore(tag,input);
+  });
+}
+
+function updateSalary(val) {
+  const n=Number(val);
+  document.getElementById("salary-label").textContent =
+    n>=100000 ? `₹${(n/100000).toFixed(n%100000===0?0:1)}L / year` : `₹${n.toLocaleString()} / year`;
+  updateStats();
+}
+
+function toggleBranch(el) {
+  document.querySelectorAll(".pill").forEach(p=>p.classList.remove("on"));
+  el.classList.add("on");
+  selectedBranch = el.dataset.branch;
+}
+
+function updateStats() {
+  document.getElementById("stat-skills").textContent =
+    postedJobs.reduce((a,j)=>a+(j.skills||[]).length,0)+skills.length;
+  const locs=[...new Set(postedJobs.map(j=>j.location).filter(Boolean))];
+  const curLoc=document.getElementById("location").value;
+  if(curLoc) locs.push(curLoc);
+  document.getElementById("stat-locs").textContent=[...new Set(locs)].length;
+  const sals=postedJobs.map(j=>j.salary).filter(Boolean);
+  const cur=Number(document.getElementById("salary").value);
+  if(cur) sals.push(cur);
+  if(sals.length) {
+    const avg=sals.reduce((a,b)=>a+b,0)/sals.length;
+    document.getElementById("stat-sal").textContent=avg>=100000?`${(avg/100000).toFixed(1)}L`:avg.toLocaleString();
+  }
+}
+
+async function postJob() {
+  const title    = document.getElementById("title").value.trim();
+  const company  = document.getElementById("company").value.trim();
+  const location = document.getElementById("location").value.trim();
+  const salary   = Number(document.getElementById("salary").value);
+  const minCGPA  = Number(document.getElementById("cgpa").value);
+
+  if (!title||!company||!location) {
+    showToast("⚠️","Missing fields","Fill title, company and location","#f59e0b"); return;
+  }
+
+  const data = { title, company, location, salary, minCGPA, skills:[...skills], branch:selectedBranch };
+
+  try {
+    const res = await fetch("http://localhost:5001/api/company/post-job",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify(data)
+    });
+    if (!res.ok) throw new Error();
+    postedJobs.push(data);
+    document.getElementById("stat-jobs").textContent=postedJobs.length;
+    updateStats();
+    addToRecent(data);
+    showToast("✅","Job published!",`${title} at ${company} is now live`,"#34d399");
+    resetForm();
+  } catch {
+    showToast("❌","Post failed","Check if server is running","#f87171");
+  }
+}
+
+function resetForm() {
+  document.getElementById("title").value="";
+  document.getElementById("company").value="";
+  document.getElementById("location").value="";
+  document.getElementById("salary").value="800000";
+  updateSalary("800000");
+  skills.length=0; renderSkills(); renderSuggested();
+}
+
+function addToRecent(job) {
+  const c=document.getElementById("recent-jobs");
+  if(c.querySelector(".empty")) c.innerHTML="";
+  const el=document.createElement("div");
+  el.className="job-item";
+  el.innerHTML=`
+    <div class="job-item-title">${job.title}</div>
+    <div class="job-item-meta">
+      <span>🏢 ${job.company}</span><span>📍 ${job.location}</span>
+      <span>₹${(job.salary/100000).toFixed(1)}L</span>
+    </div>
+    <div style="margin-top:7px;display:flex;flex-wrap:wrap;gap:3px">
+      ${(job.skills||[]).slice(0,4).map(s=>`<span class="job-skill">${s}</span>`).join("")}
+    </div>`;
+  c.insertBefore(el,c.firstChild);
+}
+
+async function loadMyJobs() {
+  const company=document.getElementById("company").value;
+  if(!company) return;
+  try {
+    const res=await fetch(`http://localhost:5001/api/company/my-jobs/${encodeURIComponent(company)}`);
+    const jobs=await res.json();
+    if(!jobs.length) return;
+    document.getElementById("recent-jobs").innerHTML="";
+    jobs.slice(0,5).forEach(j=>addToRecent(j));
+  } catch(e){}
+}
+
+function showToast(icon,title,sub,borderColor="#34d399") {
+  const t=document.getElementById("toast");
+  document.getElementById("toast-icon").textContent=icon;
+  document.getElementById("toast-title").textContent=title;
+  document.getElementById("toast-sub").textContent=sub;
+  t.style.borderLeftColor=borderColor;
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),3500);
+}
+
+updateSalary("800000");
+</script>
+</body>
+</html>

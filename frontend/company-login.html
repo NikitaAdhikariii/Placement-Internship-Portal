@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Company Login</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{height:100vh;display:flex;justify-content:center;align-items:center;background:#111;font-family:Arial;}
+.circle{position:absolute;width:340px;height:340px;background:radial-gradient(circle,#469ec7,#0a8f87);border-radius:50%;filter:blur(8px);}
+.box{position:relative;width:380px;padding:30px;border:1px solid rgba(255,255,255,0.5);background:rgba(255,255,255,0.05);backdrop-filter:blur(8px);text-align:center;color:white;border-radius:8px;}
+h2{margin-bottom:16px;letter-spacing:2px;}
+input{width:100%;padding:10px;margin:7px 0;border:1px solid rgba(255,255,255,0.6);background:transparent;color:white;border-radius:4px;font-size:14px;}
+input::placeholder{color:rgba(255,255,255,0.5);}
+.btn{width:100%;padding:11px;margin-top:12px;border:1px solid white;background:transparent;color:white;cursor:pointer;letter-spacing:1px;border-radius:4px;font-size:14px;font-weight:bold;}
+.btn:hover{background:#cad164;color:black;}
+.btn:disabled{opacity:0.6;cursor:not-allowed;}
+.msg{margin-top:10px;font-size:13px;min-height:18px;}
+.err{color:#ff6b6b;}.ok{color:#51cf66;}
+.toggle{margin-top:12px;display:block;color:#4aa8d8;cursor:pointer;text-decoration:underline;font-size:13px;}
+.back{margin-top:8px;display:block;color:#888;font-size:12px;cursor:pointer;text-decoration:underline;}
+#nameWrap{display:none;}
+</style>
+</head>
+<body>
+<div class="circle"></div>
+<div class="box">
+  <h2 id="title">COMPANY LOGIN</h2>
+
+  <div id="nameWrap">
+    <input type="text" id="name" placeholder="Company Name">
+  </div>
+
+  <input type="email"    id="email"    placeholder="Company Email">
+  <input type="password" id="password" placeholder="Password">
+
+  <button class="btn" id="mainBtn" onclick="handleSubmit()">LOGIN</button>
+
+  <p class="msg" id="msg"></p>
+
+  <span class="toggle" id="toggleBtn" onclick="toggleMode()">Don't have account? Register</span>
+  <span class="back" onclick="location.href='index.html'">← Back to home</span>
+</div>
+
+<script>
+let isRegister = false;
+
+function toggleMode() {
+  isRegister = !isRegister;
+  document.getElementById("nameWrap").style.display = isRegister ? "block" : "none";
+  document.getElementById("title").textContent = isRegister ? "COMPANY REGISTER" : "COMPANY LOGIN";
+  document.getElementById("mainBtn").textContent = isRegister ? "REGISTER" : "LOGIN";
+  document.getElementById("toggleBtn").textContent = isRegister
+    ? "Already have account? Login"
+    : "Don't have account? Register";
+  setMsg("");
+}
+
+function setMsg(t, type="") {
+  const el = document.getElementById("msg");
+  el.textContent = t;
+  el.className = "msg " + (type === "error" ? "err" : type === "success" ? "ok" : "");
+}
+
+async function login() {
+  const email = emailEl();
+  const password = passEl();
+
+  try {
+    const res = await fetch("http://localhost:5001/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await res.json();
+
+    if (res.ok && data.user) {
+      localStorage.setItem("userId", data.user._id);
+      localStorage.setItem("userRole", "company");
+
+      setMsg("Login success", "success");
+      setTimeout(() => location.href = "dashboard-company.html", 800);
+    } else {
+      setMsg(data.message || "Login failed", "error");
+    }
+  } catch {
+    setMsg("Server error", "error");
+  }
+}
+
+async function register() {
+  const name = document.getElementById("name").value.trim();
+  const email = emailEl();
+  const password = passEl();
+
+  try {
+    const res = await fetch("http://localhost:5001/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email, password, role: "company" })
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      setMsg("Registered successfully", "success");
+      setTimeout(toggleMode, 1000);
+    } else {
+      setMsg(data.message || "Failed", "error");
+    }
+  } catch {
+    setMsg("Server error", "error");
+  }
+}
+
+function handleSubmit() {
+  isRegister ? register() : login();
+}
+
+function emailEl() { return document.getElementById("email").value.trim(); }
+function passEl() { return document.getElementById("password").value; }
+</script>
+</body>
+</html>

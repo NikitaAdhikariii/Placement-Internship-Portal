@@ -1,0 +1,27 @@
+[
+  {
+    "company": "Google",
+    "role": "Frontend Developer",
+    "skills": "react javascript html css frontend ui ux"
+  },
+  {
+    "company": "Amazon",
+    "role": "Backend Engineer",
+    "skills": "java spring boot backend mysql api"
+  },
+  {
+    "company": "Microsoft",
+    "role": "Cloud Engineer",
+    "skills": "azure docker kubernetes cloud devops"
+  },
+  {
+    "company": "Netflix",
+    "role": "ML Engineer",
+    "skills": "python tensorflow pytorch machine learning ai"
+  },
+  {
+    "company": "Uber",
+    "role": "Data Engineer",
+    "skills": "python kafka spark sql big data"
+  }
+]

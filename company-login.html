@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Company Login</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:Arial;background-image:url("images/gehu.jpg");background-size:cover;background-position:center;height:100vh;display:flex;justify-content:center;align-items:center;}
+.box{background:rgba(255,255,255,0.95);padding:35px;border-radius:10px;width:340px;text-align:center;box-shadow:0 0 20px rgba(0,0,0,0.4);}
+h2{color:#003366;margin-bottom:16px;}
+input{width:100%;padding:11px;margin:7px 0;border:1px solid #ccc;border-radius:6px;font-size:14px;}
+.btn{width:100%;padding:12px;background:#003366;color:white;border:none;border-radius:6px;font-size:15px;cursor:pointer;margin-top:10px;font-weight:bold;}
+.btn:hover{background:#0055aa;}.btn:disabled{opacity:0.6;cursor:not-allowed;}
+.msg{margin-top:10px;font-size:13px;font-weight:500;min-height:18px;}
+.err{color:red;}.ok{color:green;}
+.toggle{margin-top:12px;display:block;color:#003366;cursor:pointer;text-decoration:underline;font-size:13px;}
+.back{margin-top:8px;display:block;color:#888;font-size:12px;cursor:pointer;text-decoration:underline;}
+#nameWrap{display:none;}
+</style>
+</head>
+<body>
+<div class="box">
+  <h2 id="title">Company Login</h2>
+  <div id="nameWrap"><input type="text" id="name" placeholder="Full Name"></div>
+  <input type="email" id="email" placeholder="Email">
+  <input type="password" id="password" placeholder="Password">
+  <button class="btn" id="mainBtn" onclick="handleSubmit()">Login</button>
+  <p class="msg" id="msg"></p>
+  <span class="toggle" id="toggleBtn" onclick="toggleMode()">New user? Register here</span>
+  <span class="back" onclick="location.href='index.html'">Back to home</span>
+</div>
+<script>
+let isRegister = false;
+function toggleMode() {
+  isRegister = !isRegister;
+  document.getElementById("nameWrap").style.display = isRegister ? "block" : "none";
+  document.getElementById("title").textContent      = isRegister ? "Company Register" : "Company Login";
+  document.getElementById("mainBtn").textContent    = isRegister ? "Register" : "Login";
+  document.getElementById("toggleBtn").textContent  = isRegister ? "Already registered? Login" : "New user? Register here";
+  setMsg("","");
+}
+function setMsg(text, type) {
+  const el = document.getElementById("msg");
+  el.textContent = text;
+  el.className = "msg " + (type==="error"?"err":type==="success"?"ok":"");
+}
+function setLoading(on) {
+  const btn = document.getElementById("mainBtn");
+  btn.disabled = on;
+  btn.textContent = on ? (isRegister?"Registering...":"Logging in...") : (isRegister?"Register":"Login");
+}
+function handleSubmit() { isRegister ? register() : login(); }
+async function login() {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  if (!email || !password) { setMsg("Please fill all fields.","error"); return; }
+  setLoading(true);
+  try {
+    const res  = await fetch("http://localhost:5001/api/auth/login", {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ email, password, role:"company" })
+    });
+    const data = await res.json();
+    if (res.ok && data.token) {
+      localStorage.setItem("token",     data.token);
+      localStorage.setItem("userId",    data.user._id);
+      localStorage.setItem("userName",  data.user.name);
+      localStorage.setItem("userEmail", data.user.email);
+      localStorage.setItem("userRole",  "company");
+      setMsg("Login successful! Redirecting...","success");
+      setTimeout(() => window.location.href = "dashboard-company.html", 800);
+    } else {
+      setMsg(data.message || "Login failed","error");
+    }
+  } catch { setMsg("Server not running. Start backend first.","error"); }
+  setLoading(false);
+}
+async function register() {
+  const name = document.getElementById("name").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  if (!name||!email||!password) { setMsg("Please fill all fields.","error"); return; }
+  if (password.length < 6) { setMsg("Password must be 6+ characters.","error"); return; }
+  setLoading(true);
+  try {
+    const res  = await fetch("http://localhost:5001/api/auth/register", {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ name, email, password, role:"company" })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      setMsg("Registered! Please login now.","success");
+      setTimeout(() => { toggleMode(); document.getElementById("email").value=email; document.getElementById("password").value=""; }, 1500);
+    } else { setMsg(data.message || "Registration failed","error"); }
+  } catch { setMsg("Server not running. Start backend first.","error"); }
+  setLoading(false);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1050 @@
+\<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Smart Placement Portal</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+font-family:'Poppins',sans-serif;
+background:#f1f5f9;
+color:#0f172a;
+}
+
+/* HEADER */
+
+.header{
+background:white;
+padding:25px;
+text-align:center;
+box-shadow:0 2px 10px rgba(0,0,0,0.08);
+position:sticky;
+top:0;
+z-index:1000;
+}
+
+.header h1{
+font-size:38px;
+color:#2563eb;
+font-weight:700;
+}
+
+.header p{
+margin-top:6px;
+color:#64748b;
+}
+
+/* SEARCH */
+
+.search-container{
+width:92%;
+max-width:1100px;
+margin:30px auto;
+position:relative;
+}
+
+.search-box{
+width:100%;
+padding:18px;
+border-radius:15px;
+border:1px solid #cbd5e1;
+outline:none;
+font-size:16px;
+background:white;
+}
+
+.search-box:focus{
+border-color:#2563eb;
+box-shadow:0 0 10px rgba(37,99,235,0.15);
+}
+
+/* SUGGESTIONS */
+
+#suggestions{
+position:absolute;
+top:65px;
+left:0;
+width:100%;
+background:white;
+border-radius:12px;
+overflow:hidden;
+box-shadow:0 5px 15px rgba(0,0,0,0.08);
+z-index:1000;
+}
+
+.suggestion-item{
+padding:14px;
+cursor:pointer;
+border-bottom:1px solid #e2e8f0;
+transition:0.3s;
+}
+
+.suggestion-item:hover{
+background:#eff6ff;
+}
+
+/* SECTION */
+
+.section{
+width:92%;
+max-width:1400px;
+margin:40px auto;
+}
+
+.section-title{
+font-size:30px;
+font-weight:700;
+margin-bottom:25px;
+color:#0f172a;
+}
+
+/* GRID */
+
+.jobs-grid,
+.eligibility-grid,
+.practice-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+gap:22px;
+}
+
+/* CARD */
+
+.card{
+background:white;
+padding:24px;
+border-radius:18px;
+box-shadow:0 5px 15px rgba(0,0,0,0.05);
+border:1px solid #e2e8f0;
+transition:0.3s;
+}
+
+.card:hover{
+transform:translateY(-4px);
+}
+
+.card h3{
+color:#2563eb;
+margin-bottom:10px;
+}
+
+.card p{
+margin:8px 0;
+font-size:14px;
+color:#475569;
+}
+
+/* BUTTON */
+
+.btn{
+width:100%;
+padding:13px;
+border:none;
+border-radius:12px;
+background:#2563eb;
+color:white;
+font-size:15px;
+font-weight:600;
+cursor:pointer;
+margin-top:16px;
+transition:0.3s;
+}
+
+.btn:hover{
+background:#1d4ed8;
+}
+
+/* RESUME */
+
+.resume-box{
+background:white;
+padding:25px;
+border-radius:18px;
+box-shadow:0 5px 15px rgba(0,0,0,0.05);
+}
+
+/* ELIGIBILITY */
+
+.match{
+font-size:32px;
+font-weight:700;
+color:#16a34a;
+margin:10px 0;
+}
+
+/* STUDY */
+
+.study-box{
+background:white;
+padding:25px;
+border-radius:18px;
+box-shadow:0 5px 15px rgba(0,0,0,0.05);
+max-height:700px;
+overflow-y:auto;
+}
+
+.study-box::-webkit-scrollbar{
+width:8px;
+}
+
+.study-box::-webkit-scrollbar-thumb{
+background:#2563eb;
+border-radius:20px;
+}
+
+/* SELECT */
+
+select{
+width:100%;
+padding:15px;
+border-radius:12px;
+border:1px solid #cbd5e1;
+font-size:15px;
+margin-bottom:20px;
+background:white;
+}
+
+/* RESOURCES */
+
+.resource-link{
+display:block;
+margin:10px 0;
+text-decoration:none;
+color:#2563eb;
+font-weight:500;
+}
+
+.resource-link:hover{
+text-decoration:underline;
+}
+
+/* NOTIFICATIONS */
+
+.notification{
+background:white;
+padding:18px;
+border-left:5px solid #2563eb;
+border-radius:14px;
+margin-bottom:15px;
+box-shadow:0 5px 12px rgba(0,0,0,0.05);
+}
+
+/* FOOTER */
+
+.footer{
+text-align:center;
+padding:30px;
+color:#64748b;
+}
+
+/* MOBILE */
+
+@media(max-width:768px){
+
+.header h1{
+font-size:30px;
+}
+
+.section-title{
+font-size:24px;
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+
+<div class="header">
+
+<h1>🎓 Smart Placement Portal</h1>
+
+<p>
+Complete Placement Preparation Platform for Students
+</p>
+
+</div>
+
+<!-- SEARCH -->
+
+<div class="search-container">
+
+<input
+type="text"
+id="searchInput"
+class="search-box"
+placeholder="🔍 Search jobs or companies..."
+autocomplete="off"
+>
+
+<div id="suggestions"></div>
+
+</div>
+
+<!-- JOBS -->
+
+<div class="section">
+
+<div class="section-title">
+💼 Placement Opportunities
+</div>
+
+<div class="jobs-grid" id="jobsContainer"></div>
+
+</div>
+
+<!-- RESUME -->
+
+<div class="section">
+
+<div class="section-title">
+📄 Upload Resume
+</div>
+
+<div class="resume-box">
+
+<input type="file" id="resumeUpload">
+
+<button class="btn" onclick="uploadResume()">
+Upload Resume
+</button>
+
+<div id="resumeResult" style="margin-top:20px"></div>
+
+</div>
+
+</div>
+
+<!-- ELIGIBILITY -->
+
+<div class="section">
+
+<div class="section-title">
+🎯 Eligibility Check
+</div>
+
+<div class="eligibility-grid" id="eligibilityContainer">
+
+<div class="card">
+
+<h3>No Resume Uploaded</h3>
+
+<p>
+Upload your resume first to check eligibility
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- PREP HUB -->
+
+<div class="section">
+
+<div class="section-title">
+🚀 Company Wise Placement Prep Hub
+</div>
+
+<div class="study-box">
+
+<select id="companySelect" onchange="loadCompanyPrep()">
+
+<option value="">
+Select Company
+</option>
+
+<option>Amazon</option>
+<option>Google</option>
+<option>Microsoft</option>
+<option>Meta</option>
+<option>Flipkart</option>
+<option>Uber</option>
+<option>Atlassian</option>
+<option>Adobe</option>
+<option>Oracle</option>
+<option>TCS</option>
+<option>Infosys</option>
+<option>Wipro</option>
+<option>Accenture</option>
+
+</select>
+
+<div id="prepContent"></div>
+
+</div>
+
+</div>
+
+<!-- DAILY PRACTICE -->
+
+<div class="section">
+
+<div class="section-title">
+📅 Daily Placement Practice
+</div>
+
+<div class="practice-grid">
+
+<div class="card">
+
+<h3>🧠 DSA Practice</h3>
+
+<p>
+Solve 3 coding problems today
+</p>
+
+<button class="btn" onclick="completeTask(this)">
+Complete
+</button>
+
+</div>
+
+<div class="card">
+
+<h3>📚 Core Subjects</h3>
+
+<p>
+Revise DBMS, OS, CN
+</p>
+
+<button class="btn" onclick="completeTask(this)">
+Complete
+</button>
+
+</div>
+
+<div class="card">
+
+<h3>💻 Resume & Projects</h3>
+
+<p>
+Improve GitHub and projects
+</p>
+
+<button class="btn" onclick="completeTask(this)">
+Complete
+</button>
+
+</div>
+
+<div class="card">
+
+<h3>🗣 HR Practice</h3>
+
+<p>
+Practice HR interview answers
+</p>
+
+<button class="btn" onclick="completeTask(this)">
+Complete
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- EMAIL -->
+
+<div class="section">
+
+<div class="section-title">
+📩 Daily Reminder
+</div>
+
+<div class="resume-box">
+
+<input
+type="email"
+id="emailInput"
+class="search-box"
+placeholder="Enter your email"
+>
+
+<button class="btn" onclick="enableReminder()">
+Enable Reminder
+</button>
+
+<div id="emailResult" style="margin-top:20px"></div>
+
+</div>
+
+</div>
+
+<!-- NOTIFICATIONS -->
+
+<div class="section">
+
+<div class="section-title">
+🔔 Notifications
+</div>
+
+<div class="notification">
+📌 Amazon SDE Internship hiring started
+</div>
+
+<div class="notification">
+📌 Microsoft Off Campus applications open
+</div>
+
+<div class="notification">
+📌 Google STEP Internship registrations started
+</div>
+
+</div>
+
+<!-- FOOTER -->
+
+<div class="footer">
+
+Made for Students 🚀
+
+</div>
+
+<script>
+
+/* =========================
+   JOB DATA
+========================= */
+
+const jobs = [
+
+{
+id:1,
+title:"Frontend Developer",
+company:"Google",
+salary:"₹28 LPA",
+location:"Bangalore",
+type:"On Campus"
+},
+
+{
+id:2,
+title:"Backend Engineer",
+company:"Amazon",
+salary:"₹32 LPA",
+location:"Hyderabad",
+type:"Off Campus"
+},
+
+{
+id:3,
+title:"Software Engineer",
+company:"Microsoft",
+salary:"₹26 LPA",
+location:"Noida",
+type:"On Campus"
+},
+
+{
+id:4,
+title:"Product Engineer",
+company:"Atlassian",
+salary:"₹38 LPA",
+location:"Remote",
+type:"Off Campus"
+},
+
+{
+id:5,
+title:"SDE",
+company:"Flipkart",
+salary:"₹24 LPA",
+location:"Bangalore",
+type:"On Campus"
+},
+
+{
+id:6,
+title:"Software Engineer",
+company:"TCS",
+salary:"₹7 LPA",
+location:"Pune",
+type:"On Campus"
+}
+
+];
+
+/* =========================
+   APPLIED JOBS
+========================= */
+
+let appliedJobs =
+JSON.parse(localStorage.getItem("appliedJobs")) || [];
+
+/* =========================
+   RENDER JOBS
+========================= */
+
+function renderJobs(data){
+
+const container =
+document.getElementById("jobsContainer");
+
+container.innerHTML =
+data.map(job => {
+
+const isApplied =
+appliedJobs.includes(job.id);
+
+return `
+
+<div class="card">
+
+<h3>${job.title}</h3>
+
+<p><b>🏢 Company:</b> ${job.company}</p>
+
+<p><b>💰 Salary:</b> ${job.salary}</p>
+
+<p><b>📍 Location:</b> ${job.location}</p>
+
+<p><b>🎯 Hiring:</b> ${job.type}</p>
+
+<button
+class="btn"
+id="apply-btn-${job.id}"
+onclick="applyJob(${job.id})"
+${isApplied ? "disabled" : ""}
+style="
+background:
+${isApplied ? "#16a34a" : "#2563eb"};
+cursor:
+${isApplied ? "not-allowed" : "pointer"};
+"
+>
+
+${isApplied ? "✅ Applied Already" : "Apply"}
+
+</button>
+
+</div>
+
+`;
+
+}).join("");
+
+}
+
+renderJobs(jobs);
+
+/* =========================
+   SEARCH
+========================= */
+
+const searchInput =
+document.getElementById("searchInput");
+
+const suggestions =
+document.getElementById("suggestions");
+
+searchInput.addEventListener("input",function(){
+
+const value =
+this.value.toLowerCase().trim();
+
+suggestions.innerHTML = "";
+
+if(value === ""){
+
+renderJobs(jobs);
+
+return;
+
+}
+
+const filtered =
+jobs.filter(job =>
+
+job.title.toLowerCase().includes(value)
+
+||
+
+job.company.toLowerCase().includes(value)
+
+);
+
+renderJobs(filtered);
+
+filtered.forEach(job => {
+
+const div =
+document.createElement("div");
+
+div.classList.add("suggestion-item");
+
+div.innerHTML =
+`${job.title} - ${job.company}`;
+
+div.onclick = () => {
+
+searchInput.value =
+job.company;
+
+suggestions.innerHTML = "";
+
+renderJobs([job]);
+
+};
+
+suggestions.appendChild(div);
+
+});
+
+});
+
+/* =========================
+   APPLY JOB
+========================= */
+
+function applyJob(jobId){
+
+if(appliedJobs.includes(jobId)){
+
+alert("Already Applied");
+
+return;
+
+}
+
+appliedJobs.push(jobId);
+
+localStorage.setItem(
+"appliedJobs",
+JSON.stringify(appliedJobs)
+);
+
+const selectedJob =
+jobs.find(job => job.id === jobId);
+
+const btn =
+document.getElementById(
+`apply-btn-${jobId}`
+);
+
+btn.innerHTML =
+"✅ Applied Already";
+
+btn.disabled = true;
+
+btn.style.background =
+"#16a34a";
+
+btn.style.cursor =
+"not-allowed";
+
+alert(
+`✅ Successfully Applied for ${selectedJob.company}`
+);
+
+}
+
+/* =========================
+   RESUME UPLOAD
+========================= */
+
+function uploadResume(){
+
+const file =
+document.getElementById("resumeUpload")
+.files[0];
+
+if(!file){
+
+alert("Please upload resume");
+
+return;
+
+}
+
+document.getElementById("resumeResult")
+.innerHTML = `
+
+<div class="card">
+
+<h3>✅ Resume Uploaded</h3>
+
+<p><b>${file.name}</b></p>
+
+<p>
+Detected Skills:
+Java, Python,
+DSA, React,
+AWS, SQL
+</p>
+
+</div>
+
+`;
+
+loadEligibility();
+
+}
+
+/* =========================
+   ELIGIBILITY
+========================= */
+
+function loadEligibility(){
+
+const companies = [
+
+"Amazon",
+"Google",
+"Microsoft",
+"Flipkart",
+"Atlassian",
+"Oracle",
+"TCS"
+
+];
+
+const container =
+document.getElementById(
+"eligibilityContainer"
+);
+
+container.innerHTML =
+companies.map(c => `
+
+<div class="card">
+
+<h3>${c}</h3>
+
+<div class="match">
+${Math.floor(Math.random()*15)+85}%
+</div>
+
+<p>✅ DSA</p>
+<p>✅ Resume</p>
+<p>✅ Projects</p>
+
+</div>
+
+`).join("");
+
+}
+
+/* =========================
+   COMPANY PREP
+========================= */
+
+const companyPrep = {
+
+Amazon:{
+
+package:"18-45 LPA",
+
+rounds:[
+"Online Assessment",
+"DSA Round",
+"Bar Raiser"
+],
+
+topics:[
+"Arrays",
+"Graphs",
+"Dynamic Programming"
+],
+
+resources:[
+["LeetCode Amazon",
+"https://leetcode.com"],
+
+["TakeUForward",
+"https://takeuforward.org"]
+]
+
+},
+
+Google:{
+
+package:"25-60 LPA",
+
+rounds:[
+"Google OA",
+"Coding Interview",
+"Googlyness"
+],
+
+topics:[
+"Graphs",
+"DP",
+"System Design"
+],
+
+resources:[
+["NeetCode",
+"https://neetcode.io"],
+
+["Codeforces",
+"https://codeforces.com"]
+]
+
+},
+
+Microsoft:{
+
+package:"20-50 LPA",
+
+rounds:[
+"Online Assessment",
+"Technical Interview",
+"HR"
+],
+
+topics:[
+"Arrays",
+"Trees",
+"System Design"
+],
+
+resources:[
+["GeeksforGeeks",
+"https://www.geeksforgeeks.org"],
+
+["InterviewBit",
+"https://www.interviewbit.com"]
+]
+
+}
+
+};
+
+function loadCompanyPrep(){
+
+const company =
+document.getElementById("companySelect")
+.value;
+
+const d = companyPrep[company];
+
+if(!d){
+
+document.getElementById("prepContent")
+.innerHTML = "";
+
+return;
+
+}
+
+document.getElementById("prepContent")
+.innerHTML = `
+
+<div class="card">
+
+<h2>${company} Placement Guide</h2>
+
+<br>
+
+<p><b>💰 Package:</b> ${d.package}</p>
+
+<br>
+
+<h3>📋 Rounds</h3>
+
+${d.rounds.map(r =>
+`<p>• ${r}</p>`
+).join("")}
+
+<br>
+
+<h3>📚 Topics</h3>
+
+${d.topics.map(t =>
+`<p>• ${t}</p>`
+).join("")}
+
+<br>
+
+<h3>🔗 Free Resources</h3>
+
+${d.resources.map(r =>
+`
+<a
+href="${r[1]}"
+target="_blank"
+class="resource-link"
+>
+${r[0]}
+</a>
+`
+).join("")}
+
+</div>
+
+`;
+
+}
+
+/* =========================
+   DAILY TASK
+========================= */
+
+function completeTask(btn){
+
+btn.innerHTML =
+"✅ Completed";
+
+btn.style.background =
+"#16a34a";
+
+btn.disabled = true;
+
+}
+
+/* =========================
+   EMAIL REMINDER
+========================= */
+
+function enableReminder(){
+
+const email =
+document.getElementById("emailInput")
+.value;
+
+if(email === ""){
+
+alert("Enter email");
+
+return;
+
+}
+
+document.getElementById("emailResult")
+.innerHTML = `
+
+<div class="card">
+
+<h3>✅ Reminder Enabled</h3>
+
+<p>${email}</p>
+
+</div>
+
+`;
+
+}
+
+</script>
+
+</body>
+</html>

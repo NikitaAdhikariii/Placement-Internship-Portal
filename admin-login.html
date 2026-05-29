@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin Login</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{height:100vh;display:flex;justify-content:center;align-items:center;font-family:Arial;background:linear-gradient(135deg,#0f4c4c,#2f7a7a);}
+.box{background:rgba(0,0,0,0.55);padding:35px;width:360px;border-radius:8px;box-shadow:0 0 20px rgba(0,0,0,0.4);text-align:center;color:white;}
+h2{margin-bottom:16px;letter-spacing:2px;}
+.input-wrap{display:flex;align-items:center;margin-bottom:10px;background:#ddd;border-radius:4px;overflow:hidden;}
+.input-wrap span{padding:10px 12px;background:#ccc;font-size:16px;}
+.input-wrap input{border:none;outline:none;padding:10px;flex:1;background:#ddd;font-size:14px;color:#333;}
+.btn{width:100%;padding:12px;background:#5f9ea0;border:none;color:white;letter-spacing:1px;cursor:pointer;border-radius:4px;font-size:14px;font-weight:bold;margin-top:6px;}
+.btn:hover{background:#4a8a8c;}.btn:disabled{opacity:0.6;cursor:not-allowed;}
+.btn.sec{background:rgba(0,0,0,0.4);margin-top:8px;}
+.msg{margin-top:10px;font-size:13px;min-height:18px;}
+.err{color:#ff6b6b;}.ok{color:#51cf66;}
+.back{margin-top:10px;display:block;color:#aaa;font-size:12px;cursor:pointer;text-decoration:underline;}
+#nameWrap{display:none;margin-bottom:4px;}
+</style>
+</head>
+<body>
+<div class="box">
+  <h2 id="title">ADMIN LOGIN</h2>
+  <div id="nameWrap">
+    <div class="input-wrap"><span>👤</span><input type="text" id="name" placeholder="Full Name"></div>
+  </div>
+  <div class="input-wrap"><span>📧</span><input type="email" id="email" placeholder="Email"></div>
+  <div class="input-wrap"><span>🔒</span><input type="password" id="password" placeholder="Password"></div>
+  <button class="btn" id="mainBtn" onclick="handleSubmit()">LOGIN</button>
+  <button class="btn sec" id="toggleBtn" onclick="toggleMode()">First time? Register</button>
+  <p class="msg" id="msg"></p>
+  <span class="back" onclick="location.href='index.html'">Back to home</span>
+</div>
+<script>
+let isRegister = false;
+function toggleMode() {
+  isRegister = !isRegister;
+  document.getElementById("nameWrap").style.display = isRegister ? "block" : "none";
+  document.getElementById("title").textContent      = isRegister ? "ADMIN REGISTER" : "ADMIN LOGIN";
+  document.getElementById("mainBtn").textContent    = isRegister ? "REGISTER" : "LOGIN";
+  document.getElementById("toggleBtn").textContent  = isRegister ? "Already have account? Login" : "First time? Register";
+  setMsg("","");
+}
+function setMsg(text, type) {
+  const el = document.getElementById("msg");
+  el.textContent = text;
+  el.className = "msg " + (type==="error"?"err":type==="success"?"ok":"");
+}
+function setLoading(on) {
+  const btn = document.getElementById("mainBtn");
+  btn.disabled = on;
+  btn.textContent = on ? (isRegister?"REGISTERING...":"LOGGING IN...") : (isRegister?"REGISTER":"LOGIN");
+}
+function handleSubmit() { isRegister ? register() : login(); }
+async function login() {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  if (!email||!password) { setMsg("Please fill all fields.","error"); return; }
+  setLoading(true);
+  try {
+    const res  = await fetch("http://localhost:5001/api/auth/login", {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ email, password, role:"admin" })
+    });
+    const data = await res.json();
+    if (res.ok && data.token) {
+      localStorage.setItem("token",     data.token);
+      localStorage.setItem("userId",    data.user._id);
+      localStorage.setItem("userName",  data.user.name);
+      localStorage.setItem("userEmail", data.user.email);
+      localStorage.setItem("userRole",  "admin");
+      setMsg("Login successful! Redirecting...","success");
+      setTimeout(() => window.location.href = "dashboard-admin.html", 800);
+    } else { setMsg(data.message || "Login failed","error"); }
+  } catch { setMsg("Server not running. Start backend first.","error"); }
+  setLoading(false);
+}
+async function register() {
+  const name = document.getElementById("name").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  if (!name||!email||!password) { setMsg("Please fill all fields.","error"); return; }
+  if (password.length < 6) { setMsg("Password must be 6+ chars.","error"); return; }
+  setLoading(true);
+  try {
+    const res  = await fetch("http://localhost:5001/api/auth/register", {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ name, email, password, role:"admin" })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      setMsg("Registered! Please login now.","success");
+      setTimeout(() => { toggleMode(); document.getElementById("email").value=email; document.getElementById("password").value=""; }, 1500);
+    } else { setMsg(data.message || "Registration failed","error"); }
+  } catch { setMsg("Server not running. Start backend first.","error"); }
+  setLoading(false);
+}
+</script>
+</body>
+</html>

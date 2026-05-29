@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Student Login</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:Arial;background-image:url("images/gehu.jpg");background-size:cover;background-position:center;height:100vh;display:flex;justify-content:center;align-items:center;}
+.box{background:rgba(255,255,255,0.95);padding:35px;border-radius:10px;width:340px;text-align:center;box-shadow:0 0 20px rgba(0,0,0,0.4);}
+h2{color:#003366;margin-bottom:16px;}
+input{width:100%;padding:11px;margin:7px 0;border:1px solid #ccc;border-radius:6px;font-size:14px;}
+.btn{width:100%;padding:12px;background:#003366;color:white;border:none;border-radius:6px;font-size:15px;cursor:pointer;margin-top:10px;font-weight:bold;}
+.btn:hover{background:#0055aa;}
+.btn:disabled{opacity:0.6;cursor:not-allowed;}
+.msg{margin-top:10px;font-size:13px;font-weight:500;min-height:18px;}
+.err{color:red;}.ok{color:green;}
+.toggle{margin-top:12px;display:block;color:#003366;cursor:pointer;text-decoration:underline;font-size:13px;}
+#nameWrap{display:none;}
+.back{margin-top:10px;display:block;color:#888;font-size:12px;cursor:pointer;text-decoration:underline;}
+</style>
+</head>
+<body>
+<div class="box">
+  <h2 id="title">🎓 Student Login</h2>
+
+  <div id="nameWrap">
+    <input type="text" id="name" placeholder="Full Name">
+  </div>
+
+  <input type="email"    id="email"    placeholder="Email">
+  <input type="password" id="password" placeholder="Password">
+
+  <button class="btn" id="mainBtn" onclick="handleSubmit()">Login</button>
+
+  <p class="msg" id="msg"></p>
+
+  <span class="toggle" id="toggleBtn" onclick="toggleMode()">New user? Register here</span>
+  <span class="back" onclick="location.href='index.html'">← Back to home</span>
+</div>
+
+<script>
+async function login() {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+
+  const res = await fetch("http://localhost:5001/api/auth/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password })
+  });
+
+  const data = await res.json();
+
+  if (res.ok && data.user) {
+    localStorage.setItem("userId", data.user._id);
+    localStorage.setItem("userRole", "student");
+
+    location.href = "dashboard-student.html";
+  } else {
+    document.getElementById("msg").innerText = data.message || "Login failed";
+  }
+}
+</script>
+</body>
+</html>
